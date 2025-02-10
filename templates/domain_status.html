@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Domain Status</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔒 SSL Expiry Date Checker</h1>
+            <nav>
+                <ul>
+                    <li><a href="/">Add Domain</a></li>
+                    <li><a href="/domain-status" class="active">Domain Status</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <section class="form-section">
+            <h2>Check Domain SSL Expiry</h2>
+            <!-- Only one form to check domain SSL expiry -->
+            <form id="check-status-form" action="/domain-status" method="GET">
+                <input type="text" id="status-subdomain" name="domain" placeholder="Enter Subdomain" required />
+                <button type="submit">Check Status</button>
+            </form>
+        </section>
+
+        {% if error %}
+        <section class="error-section">
+            <h2>Error</h2>
+            <p>{{ error }}</p>
+        </section>
+        {% endif %}
+
+        {% if domain %}
+        <section class="domain-data-section">
+            <h2>Domain SSL Expiry Information</h2>
+            <div class="domain-info">
+                <p><strong>Domain:</strong> {{ domain }}</p>
+                <p><strong>SSL Expiry Date:</strong> {{ ssl_expiry_date }}</p>
+            </div>
+        </section>
+        {% endif %}
+
+        {% if domain_data %}
+        <section class="domain-data-section">
+            <h2>Domains in Watchlist</h2>
+            <table id="domain-table">
+                <thead>
+                    <tr>
+                        <th>Sub Domain</th>
+                        <th>SSL Expiry Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for domain in domain_data %}
+                    <tr>
+                        <td>{{ domain['Sub Domains'] }}</td>
+                        <td>{{ domain.get('SSL Expiry Date', 'N/A') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+        {% endif %}
+
+        <footer>
+            <p>Developed by Support Team</p>
+        </footer>
+    </div>
+</body>
+</html>

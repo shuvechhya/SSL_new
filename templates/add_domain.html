@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Domain to Watchlist</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔒 SSL Expiry Date Checker</h1>
+            <nav>
+                <ul>
+                    <li><a href="/add-domain" class="active">Add Domain</a></li>
+                    <li><a href="/domain-status">Domain Status</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <section class="form-section">
+            <h2>Add Domain to Watchlist</h2>
+            <form id="add-domain-form" action="/add-domain" method="POST">
+                <input type="text" id="subdomain" name="domain" placeholder="Enter Subdomain" required />
+                <button type="submit" id="add-btn">Add to Watchlist</button>
+                <p id="error-msg" class="error-msg"></p>
+            </form>
+
+            {% if message %}
+                <p class="success-message">{{ message }}</p>
+            {% elif error %}
+                <p class="error-message">{{ error }}</p>
+            {% endif %}
+        </section>
+
+        <!-- Displaying SSL Expiry Alerts -->
+        <!-- {% if alerts %}
+        <section class="alerts-section">
+            <h2>SSL Expiry Alerts</h2>
+            <div class="alerts-container">
+                {% for alert in alerts %}
+                    <div class="alert">
+                        <p>{{ alert }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% else %}
+            <p>No SSL expiry alerts at the moment.</p>
+        {% endif %} --> 
+
+        <footer>
+            <p>Developed by Support Team</p>
+        </footer>
+    </div>
+</body>
+</html>

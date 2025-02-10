@@ -1,0 +1,7 @@
+version: '3'
+services:
+  fastapi:
+    build: .
+    ports:
+      - "8006:8006"
+    restart: always
