@@ -1,35 +1,30 @@
 Sub Domains,SSL Expiry Date
-email.accessworld.net,2026-02-07
 mail.accessworld.net,2026-02-07
 mail1.accessworld.net,2026-02-07
 mon1.accessworld.net:3000,2026-02-07
 mx-01.accessworld.net:8006,2026-02-07
 gitlab-internal.accessworld.net,2026-02-07
-mx-02.accessworld.net:8006,Error: timed out
+mx-02.accessworld.net:8006,2026-02-07
 mon1.accessworld.net:3000,2026-02-07
 mon2.accessworld.net,2026-02-07
-controldev.accessworld.net,Error: timed out
+controldev.accessworld.net,2026-02-07
 dcvms.accessworld.net,2026-02-07
 accessworld.net,2026-02-07
-ticket.accessworld.net,Error: timed out
-wiki1.accessworld.net,Error: timed out
+ticket.accessworld.net,2026-02-07
+wiki1.accessworld.net,2026-02-07
 share.accessworld.net,2026-02-07
-docs.accessworld.net,Error: timed out
+docs.accessworld.net,2026-02-07
 makuri.accessworld.net,2025-04-20
 mydns.accessworld.net:8080,2026-02-07
-smtp-01.accessworld.net:8006,Error: timed out
-smtp-02.accessworld.net:8006,Error: timed out
+smtp-01.accessworld.net:8006,2026-02-07
+smtp-02.accessworld.net:8006,2026-02-07
 hulaki.accessworld.net,2025-04-21
-uat.accessworld.net,Error: timed out
 cpanel-edge.accessworld.net,2026-02-07
 dcim2.accessworld.net,2025-04-21
-esa.accessworld.net,Error: [WinError 10061] No connection could be made because the target machine actively refused it
-git.accessworld.net,Error: timed out
-office.accessworld.net,Error: timed out
+git.accessworld.net,2026-02-07
+office.accessworld.net,2026-02-07
 awtmail.awt.cloud,2025-12-15
-dixi.accessworld.net,Error: [Errno 11001] getaddrinfo failed
-test.accessworld.net,Error: [Errno 11001] getaddrinfo failed
-hello,Error: [Errno 11001] getaddrinfo failed
 google.com,2025-04-14
-facebook.com,2025-02-17
-fcebook.com,"Error: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: Hostname mismatch, certificate is not valid for 'fcebook.com'. (_ssl.c:1000)"
+facebook.com,2025-02-19
+amazon.com,2025-07-27
+instagram.com,2025-02-19
