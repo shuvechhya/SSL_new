@@ -26,29 +26,15 @@
                 <p id="error-msg" class="error-msg"></p>
             </form>
 
+            <p><strong>Note:</strong> If your domain includes a port (e.g., <code>mx-02.accessworld.net:8006</code>), please make sure to enter the domain along with the port</p>
+
+
             {% if message %}
                 <p class="success-message">{{ message }}</p>
             {% elif error %}
                 <p class="error-message">{{ error }}</p>
             {% endif %}
         </section>
-
-        <!-- Displaying SSL Expiry Alerts -->
-        <!-- {% if alerts %}
-        <section class="alerts-section">
-            <h2>SSL Expiry Alerts</h2>
-            <div class="alerts-container">
-                {% for alert in alerts %}
-                    <div class="alert">
-                        <p>{{ alert }}</p>
-                    </div>
-                {% endfor %}
-            </div>
-        </section>
-        {% else %}
-            <p>No SSL expiry alerts at the moment.</p>
-        {% endif %} --> 
-
         <footer>
             <p>Developed by Support Team</p>
         </footer>

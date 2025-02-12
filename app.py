@@ -22,8 +22,10 @@ templates = Jinja2Templates(directory="templates")
 
 excel_file_path = 'domains.csv'
 
-def check_a_record(domain: str) -> bool:
+def check_a_record(domain_with_port: str) -> bool:
     try:
+        # Strip the port if it's included
+        domain = domain_with_port.split(':')[0]  
         answers = dns.resolver.resolve(domain, 'A')
         return bool(answers) 
     except dns.resolver.NoAnswer:
