@@ -1,20 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Domain Status</title>
+    <link rel="icon" href="/static/images.png" type="image/x-icon">
     <link rel="stylesheet" href="/static/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
     <div class="container">
         <header>
             <h1>🔒 SSL Expiry Date Checker</h1>
             <nav>
                 <ul>
-                    <li><a href="/">Add Domain</a></li>
-                    <li><a href="/domain-status" class="active">Domain Status</a></li>
+                    <li><a href="/" class="active">Domain Status</a></li>
+                    <li><a href="/add-domain">Add Domain</a></li>
                 </ul>
             </nav>
         </header>
@@ -22,7 +25,7 @@
         <section class="form-section">
             <h2>Check Domain SSL Expiry</h2>
             <form id="check-status-form" action="/domain-status" method="GET">
-                <input type="text" id="status-subdomain" name="domain" placeholder="Enter Subdomain" required />
+                <input type="text" id="status-subdomain" name="domain" placeholder="Enter Subdomain" required aria-label="Enter the subdomain to check SSL expiry" />
                 <button type="submit">Check Status</button>
             </form>
         </section>
@@ -44,40 +47,10 @@
         </section>
         {% endif %}
 
-        {% if domain_data %}
-        <section class="domain-data-section">
-            <h2>Domains in Watchlist</h2>
-            <table id="domain-table">
-                <thead>
-                    <tr>
-                        <th>Sub Domain</th>
-                        <th>SSL Expiry Date</th>
-                        <th>Action</th> <!-- Added Delete Column -->
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for domain in domain_data %}
-                    <tr>
-                        <td>{{ domain['Sub Domains'] }}</td>
-                        <td>{{ domain.get('SSL Expiry Date', 'N/A') }}</td>
-                        <td>
-                            <form action="/delete-domain" method="POST" style="display:inline;">
-                                <input type="hidden" name="domain" value="{{ domain['Sub Domains'] }}">
-                                <button type="submit" onclick="return confirm('Are you sure?')" style="border: none; background: none; cursor: pointer;">
-                                    <i class="fas fa-trash" style="color: grey;"></i>
-                                </button>
-                            </form>
-                        </td>                        
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </section>
-        {% endif %}
-
         <footer>
-            <p>Developed by Support Team</p>
+            <p>Developed by the Support Team</p>
         </footer>
     </div>
 </body>
+
 </html>

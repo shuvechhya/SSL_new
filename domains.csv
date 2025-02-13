@@ -1,5 +1,4 @@
 Sub Domains,SSL Expiry Date
-mail.accessworld.net,2026-02-07
 mail1.accessworld.net,2026-02-07
 mon1.accessworld.net:3000,2026-02-07
 mx-01.accessworld.net:8006,2026-02-07
@@ -23,3 +22,4 @@ facebook.com,2025-02-17
 git.accessworld.net,2026-02-07
 office.accessworld.net,2026-02-07
 mx-02.accessworld.net:8006,2026-02-07
+smtp-01.accessworld.net:8006,2026-02-07

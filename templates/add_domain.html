@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Domain to Watchlist</title>
+    <link rel="icon" href="/static/images.png" type="image/x-icon">
     <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body>
     <div class="container">
@@ -12,12 +14,13 @@
             <h1>🔒 SSL Expiry Date Checker</h1>
             <nav>
                 <ul>
-                    <li><a href="/add-domain" class="active">Add Domain</a></li>
-                    <li><a href="/domain-status">Domain Status</a></li>
+                    <li><a href="/">Domain Status</a></li>
+                    <li><a href="/add-domain" class="active">Add Domain</a></li>  
                 </ul>
             </nav>
         </header>
 
+        <!-- Form to Add Domain -->
         <section class="form-section">
             <h2>Add Domain to Watchlist</h2>
             <form id="add-domain-form" action="/add-domain" method="POST">
@@ -26,15 +29,59 @@
                 <p id="error-msg" class="error-msg"></p>
             </form>
 
-            <p><strong>Note:</strong> If your domain includes a port (e.g., <code>mx-02.accessworld.net:8006</code>), please make sure to enter the domain along with the port</p>
+            <p><strong>Note:</strong> If your domain includes a port (e.g., <code>mx-02.accessworld.net:8006</code>), please make sure to enter the domain along with the port.</p>
 
-
+            <!-- Success/Error Messages -->
             {% if message %}
                 <p class="success-message">{{ message }}</p>
             {% elif error %}
                 <p class="error-message">{{ error }}</p>
             {% endif %}
         </section>
+
+        <!-- Display Single Domain SSL Expiry Info -->
+        {% if domain %}
+        <section class="domain-data-section">
+            <h2>Domain SSL Expiry Information</h2>
+            <div class="domain-info">
+                <p><strong>Domain:</strong> {{ domain }}</p>
+                <p><strong>SSL Expiry Date:</strong> {{ ssl_expiry_date }}</p>
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Display Domains from CSV -->
+        {% if domain_data %}
+        <section class="domain-data-section">
+            <h2>Domains in Watchlist</h2>
+            <table id="domain-table">
+                <thead>
+                    <tr>
+                        <th>Sub Domain</th>
+                        <th>SSL Expiry Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for domain in domain_data %}
+                        <tr>
+                            <td>{{ domain['Sub Domains'] }}</td>
+                            <td>{{ domain.get('SSL Expiry Date', 'N/A') }}</td>
+                            <td>
+                                <form action="/delete-domain" method="POST" style="display:inline;">
+                                    <input type="hidden" name="domain" value="{{ domain['Sub Domains'] }}">
+                                    <button type="submit" onclick="return confirm('Are you sure?')" style="border: none; background: none; cursor: pointer;">
+                                        <i class="fas fa-trash" style="color: grey;"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+        {% endif %}
+
         <footer>
             <p>Developed by Support Team</p>
         </footer>
