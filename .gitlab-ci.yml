@@ -13,7 +13,7 @@ build:
   image: docker:latest
   services:
     - name: docker:dind
-      alias: docker  # Ensures the `docker` hostname can be resolved
+      alias: docker  # This ensures the `docker` service can be resolved
   script:
     - echo "Building Docker image with docker-compose..."
     - docker-compose build
@@ -26,7 +26,7 @@ deploy:
   image: docker:latest
   services:
     - name: docker:dind
-      alias: docker  # Ensures the `docker` hostname can be resolved
+      alias: docker  # Same alias for resolving docker inside deploy stage
   script:
     - echo "Deploying with docker-compose..."
     - docker-compose pull
