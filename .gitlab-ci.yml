@@ -1,31 +1,32 @@
-stages:          # List of stages for jobs, and their order of execution
+### .gitlab-ci.yml
+stages:
   - build
-  - test
   - deploy
 
-build-job:       # This job runs in the build stage, which runs first.
+variables:
+  CI_REGISTRY: "gitlab.example.com:5050"
+  CI_PROJECT_NAMESPACE: "$CI_PROJECT_NAMESPACE"
+  CI_PROJECT_NAME: "$CI_PROJECT_NAME"
+  IMAGE_NAME: "$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/fastapi:latest"
+
+build:
   stage: build
+  image: docker:latest
+  services:
+    - docker:dind
   script:
-    - echo "Compiling the code..."
-    - echo "Compile complete."
+    - echo "Building Docker image with docker-compose..."
+    - docker-compose build
+    - docker tag fastapi:latest $IMAGE_NAME
+    - docker login $CI_REGISTRY -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
+    - docker push $IMAGE_NAME
 
-unit-test-job:   # This job runs in the test stage.
-  stage: test    # It only starts when the job in the build stage completes successfully.
+deploy:
+  stage: deploy
+  image: docker:latest
+  services:
+    - docker:dind
   script:
-    - echo "Running unit tests... This will take about 60 seconds."
-    - sleep 60
-    - echo "Code coverage is 90%"
-
-lint-test-job:   # This job also runs in the test stage.
-  stage: test    # It can run at the same time as unit-test-job (in parallel).
-  script:
-    - echo "Linting code... This will take about 10 seconds."
-    - sleep 10
-    - echo "No lint issues found."
-
-deploy-job:      # This job runs in the deploy stage.
-  stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
-  environment: production
-  script:
-    - echo "Deploying application..."
-    - echo "Application successfully deployed."
+    - echo "Deploying with docker-compose..."
+    - docker-compose pull
+    - docker-compose up -d
