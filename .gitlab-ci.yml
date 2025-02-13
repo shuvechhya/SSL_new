@@ -4,17 +4,22 @@ stages:
 
 variables:
   IMAGE_NAME: "fastapi:latest"
-  DOCKER_HOST: tcp://docker:2375/  # Explicitly set DOCKER_HOST to connect to the Docker daemon
-  DOCKER_DRIVER: overlay2           # Use overlay2 driver for better performance
-  DOCKER_TLS_CERTDIR: ""            # Disable TLS for simplicity (if not needed)
+  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_DRIVER: overlay2
 
 build:
   stage: build
   image: docker:latest
   services:
     - name: docker:dind
-      alias: docker  # Alias to resolve Docker service
+      alias: docker
   script:
+    - echo "Checking DNS resolution for 'docker'..."
+    - nslookup docker  # Check if "docker" resolves to an IP address
+    - ping -c 4 docker  # Ping the "docker" hostname to verify connectivity
+    - echo "Checking Docker daemon..."
+    - docker info
     - echo "Building Docker image with docker-compose..."
     - docker-compose build
     - docker tag fastapi:latest $IMAGE_NAME
@@ -24,7 +29,7 @@ deploy:
   image: docker:latest
   services:
     - name: docker:dind
-      alias: docker  
+      alias: docker
   script:
     - echo "Deploying with docker-compose..."
     - docker-compose pull
