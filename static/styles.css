@@ -174,3 +174,13 @@ table tr:hover {
 .alert p {
     margin: 0;
 }
+
+.expiry-soon {
+    color: red;
+    font-weight: bold;
+}
+
+.expired {
+    color: grey;
+    text-decoration: line-through;
+}

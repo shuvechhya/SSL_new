@@ -7,6 +7,17 @@
     <link rel="icon" href="/static/images.png" type="image/x-icon">
     <link rel="stylesheet" href="/static/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        /* Add this CSS for highlighting expiry dates */
+        .expiry-soon {
+            color: red;
+            font-weight: bold;
+        }
+        .expired {
+            color: grey;
+            text-decoration: line-through; /* Strikethrough for expired domains */
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -66,7 +77,16 @@
                     {% for domain in domain_data %}
                         <tr>
                             <td>{{ domain['Sub Domains'] }}</td>
-                            <td>{{ domain.get('SSL Expiry Date', 'N/A') }}</td>
+                            <!-- Updated <td> with conditional logic -->
+                            <td class="
+                                {% if domain.get('days_until_expiry', -1) < 0 %}
+                                    expired
+                                {% elif domain.get('days_until_expiry', -1) <= 30 %}
+                                    expiry-soon
+                                {% endif %}
+                            ">
+                                {{ domain.get('SSL Expiry Date', 'N/A') }}
+                            </td>
                             <td>
                                 <form action="/delete-domain" method="POST" style="display:inline;">
                                     <input type="hidden" name="domain" value="{{ domain['Sub Domains'] }}">
