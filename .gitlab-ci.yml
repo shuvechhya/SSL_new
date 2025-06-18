@@ -1,36 +1,36 @@
-stages:
-  - build
-  - deploy
-
-variables:
-  IMAGE_NAME: "fastapi:latest"
-  DOCKER_HOST: tcp://docker:2375/
-  DOCKER_TLS_CERTDIR: ""
-  DOCKER_DRIVER: overlay2
-
-build:
-  stage: build
-  image: docker:latest
-  services:
-    - name: docker:dind
-      alias: docker
-  script:
-    - echo "Checking DNS resolution for 'docker'..."
-    - nslookup docker  # Check if "docker" resolves to an IP address
-    - ping -c 4 docker  # Ping the "docker" hostname to verify connectivity
-    - echo "Checking Docker daemon..."
-    - docker info
-    - echo "Building Docker image with docker-compose..."
-    - docker-compose build
-    - docker tag fastapi:latest $IMAGE_NAME
-
-deploy:
+deploy_to_server:
   stage: deploy
-  image: docker:latest
-  services:
-    - name: docker:dind
-      alias: docker
+  image: ruby:2.7
   script:
-    - echo "Deploying with docker-compose..."
-    - docker-compose pull
-    - docker-compose up -d
+    # Setup SSH
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+
+    # Write key from GitLab variable
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+
+    # Convert to PEM if needed
+    - echo "Converting key to PEM format..."
+    - mv ~/.ssh/id_rsa ~/.ssh/id_rsa_openssh
+    - ssh-keygen -p -m PEM -f ~/.ssh/id_rsa_openssh -N "" -q || { echo "Key conversion failed"; exit 1; }
+    - mv ~/.ssh/id_rsa_openssh ~/.ssh/id_rsa
+
+    # Test SSH connection
+    - echo "Testing SSH connection to remote server..."
+    - ssh -o StrictHostKeyChecking=no -p 9022 shuvechhya@10.10.40.114 "echo 'SSH OK'"
+
+        # Run docker-compose commands on server after git pull
+    - echo "Pulling latest changes and restarting Docker Compose project..."
+    - ssh -T -o StrictHostKeyChecking=no -p 9022 shuvechhya@10.10.40.114 "
+        cd /home/shuvechhya/ssl/SSL_new &&
+        git pull https://shuvechhya:glpat-c3EiRXypSWBhC_z1rXND@@git.accessworld.net/shuvechhya/SSL_new.git master &&
+        docker compose down &&
+        docker compose up -d
+      "
+
+
+  tags:
+    - shuvechhya
+  only:
+    - master
