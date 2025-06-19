@@ -63,6 +63,7 @@ def get_ssl_expiry(domain_with_port: str) -> str:
                 return expiry_date.strftime("%Y-%m-%d")
     except Exception as e:
         logging.error(f"SSL expiry check failed for {domain}: {e}")
+        print("cicd")
         return "Error: Could not retrieve SSL expiry"
 
 # Routes

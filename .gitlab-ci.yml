@@ -24,7 +24,7 @@ deploy_to_server:
     - echo "Pulling latest changes and restarting Docker Compose project..."
     - ssh -T -o StrictHostKeyChecking=no -p 9022 shuvechhya@10.10.40.114 "
         cd /home/shuvechhya/ssl/SSL_new &&
-        git pull https://shuvechhya:glpat-c3EiRXypSWBhC_z1rXND@@git.accessworld.net/shuvechhya/SSL_new.git master &&
+        git pull https://shuvechhya:glpat-c3EiRXypSWBhC_z1rXND@@git.accessworld.net/shuvechhya/SSL_new.git main &&
         docker compose down &&
         docker compose up -d
       "
