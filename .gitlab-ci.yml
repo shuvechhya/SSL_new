@@ -33,4 +33,4 @@ deploy_to_server:
   tags:
     - shuvechhya
   only:
-    - master
+    - main
