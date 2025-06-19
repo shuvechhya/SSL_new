@@ -1,4 +1,4 @@
-# SSL_new
+# SSL with cicd for deployment in docker
 
 This project is a web application hosted on a Dockerized environment on a remote Linux server.  
 It is configured with an automated CI/CD pipeline that deploys changes on push.
