@@ -25,7 +25,7 @@ It is configured with an automated CI/CD pipeline that deploys changes on push.
 ├── docker-compose.yml      # Docker Compose file
 ├── (application files)
 
-#Automated CI/CD
+## Automated CI/CD
 The .gitlab-ci.yml pipeline is configured to:
 
 SSH into the server
@@ -50,12 +50,3 @@ Git installed
 
 CI/CD Runner
 GitLab Runner is installed on the server.
-
-List of runners can be viewed with:
-
-sudo gitlab-runner list
-shuvechhya
-shuvechhya-metrics
-Runner executor type: docker
-
-Runner must be registered for this project.
