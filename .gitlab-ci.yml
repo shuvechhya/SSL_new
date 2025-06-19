@@ -25,7 +25,7 @@ deploy_to_server:
     - ssh -T -o StrictHostKeyChecking=no -p 9022 shuvechhya@10.10.40.114 "
         cd /home/shuvechhya/ssl/SSL_new &&
         git config --global --add safe.directory /home/shuvechhya/ssl/SSL_new &&
-        git pull https://shuvechhya:glpat-c3EiRXypSWBhC_z1rXND@@git.accessworld.net/shuvechhya/SSL_new.git main &&
+        git pull https://shuvechhya:glpat-c3EiRXypSWBhC_z1rXND@git.accessworld.net/shuvechhya/SSL_new.git main &&
         docker compose down &&
         docker compose up -d
       "
