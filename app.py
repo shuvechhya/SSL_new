@@ -1,8 +1,9 @@
+import asyncio
 import logging
 import os
 import pandas as pd
 from fastapi import FastAPI, HTTPException, Request, Form, Depends
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from datetime import datetime
@@ -20,37 +21,35 @@ templates = Jinja2Templates(directory="templates")
 
 excel_file_path = 'domains.csv'
 
+
 # Helper functions
 
 def read_csv():
     """Reads CSV file and returns dataframe.""" 
     if os.path.exists(excel_file_path):
         return pd.read_csv(excel_file_path)
-    return pd.DataFrame(columns=['Sub Domains', 'SSL Expiry Date'])
+    return pd.DataFrame(columns=['Sub Domains', 'SSL Expiry Date', 'days_until_expiry'])
 
 def write_csv(df: pd.DataFrame):
-    """Writes the dataframe to CSV."""
+    """Writes the dataframe to CSV.""" 
     df.to_csv(excel_file_path, index=False)
 
 def domain_exists(df: pd.DataFrame, domain: str) -> bool:
-    """Checks if the domain already exists in the dataframe."""
+    """Checks if the domain already exists in the dataframe.""" 
     return domain in df['Sub Domains'].values
 
 def check_a_record(domain_with_port: str) -> bool:
-    """Checks if A record exists for a domain."""
+    """Checks if A record exists for a domain.""" 
     try:
         domain = domain_with_port.split(':')[0]  
         dns.resolver.resolve(domain, 'A')
         return True
-    except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
-        return False
-    except Exception as e:
-        logging.error(f"DNS lookup error for {domain}: {e}")
+    except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN, Exception):
         return False
 
 def get_ssl_expiry(domain_with_port: str) -> str:
-    """Gets the SSL expiry date for a domain."""
-    domain_with_port = str(domain_with_port).strip()
+    """Gets the SSL expiry date for a domain.""" 
+    domain_with_port = domain_with_port.strip()
     domain, port = domain_with_port.split(":") if ":" in domain_with_port else (domain_with_port, 443)
 
     try:
@@ -67,6 +66,38 @@ def get_ssl_expiry(domain_with_port: str) -> str:
         print("this is the test for cicd")
         return "Error: Could not retrieve SSL expiry"
 
+def get_days_until_expiry(expiry_date_str: str) -> int:
+    """Calculates the number of days until the SSL certificate expires.""" 
+    if expiry_date_str.startswith("Error"):
+        return -1  # Invalid SSL expiry date
+    
+    expiry_date = datetime.strptime(expiry_date_str, "%Y-%m-%d")
+    current_date = datetime.now()
+    delta = expiry_date - current_date
+    return delta.days
+
+async def update_ssl_expiry_dates():
+    """Updates the SSL expiry dates for all domains in the CSV file.""" 
+    while True:
+        try:
+            df = read_csv()
+            for index, row in df.iterrows():
+                domain = row['Sub Domains']
+                ssl_expiry_date = get_ssl_expiry(domain)
+                days_until_expiry = get_days_until_expiry(ssl_expiry_date)
+                df.at[index, 'SSL Expiry Date'] = ssl_expiry_date
+                df.at[index, 'days_until_expiry'] = days_until_expiry
+            write_csv(df)
+            logging.info("SSL expiry dates updated successfully.")
+        except Exception as e:
+            logging.error(f"Error updating SSL expiry dates: {e}")
+        await asyncio.sleep(24 * 60 * 60)  # Sleep for 24 hours
+
+@app.on_event("startup")
+async def startup_event():
+    """Start the background task to update SSL expiry dates on startup.""" 
+    asyncio.create_task(update_ssl_expiry_dates())
+
 # Routes
 
 @app.get("/", response_class=HTMLResponse)
@@ -80,6 +111,10 @@ async def add_domain_get(request: Request):
     try:
         df = read_csv()
         domain_data = df.to_dict('records') if not df.empty else []
+
+        for domain in domain_data:
+            domain['days_until_expiry'] = get_days_until_expiry(domain['SSL Expiry Date'])
+
         return templates.TemplateResponse("add_domain.html", {
             "request": request,
             "domain_data": domain_data
@@ -94,7 +129,7 @@ async def add_domain_get(request: Request):
 
 @app.post("/add-domain", response_class=HTMLResponse)
 async def add_domain_post(request: Request, domain: str = Form(...)):
-    """Adds a domain to the watchlist."""
+    """Adds a domain to the watchlist.""" 
     if not domain:
         return templates.TemplateResponse("add_domain.html", {
             "request": request,
@@ -110,7 +145,7 @@ async def add_domain_post(request: Request, domain: str = Form(...)):
         })
 
     try:
-        df = read_csv()  # Always read current CSV data
+        df = read_csv()  
 
         if domain_exists(df, subdomain):
             return templates.TemplateResponse("add_domain.html", {
@@ -120,40 +155,39 @@ async def add_domain_post(request: Request, domain: str = Form(...)):
             })
 
         ssl_expiry_date = get_ssl_expiry(subdomain)
+        days_until_expiry = get_days_until_expiry(ssl_expiry_date)
 
-        new_row = pd.DataFrame({'Sub Domains': [subdomain], 'SSL Expiry Date': [ssl_expiry_date]})
+        new_row = pd.DataFrame({
+            'Sub Domains': [subdomain],
+            'SSL Expiry Date': [ssl_expiry_date],
+            'days_until_expiry': [days_until_expiry]
+        })
+
         df = pd.concat([df, new_row], ignore_index=True)
 
         write_csv(df)
 
         return templates.TemplateResponse("add_domain.html", {
             "request": request,
-            "message": f"{subdomain} added to the watchlist successfully with SSL expiry date: {ssl_expiry_date}!",
+            "message": f"{subdomain} added to the watchlist successfully with SSL expiry date: {ssl_expiry_date}",
             "domain_data": df.to_dict('records')
         })
 
     except Exception as e:
         logging.error(f"Error while adding domain {subdomain}: {e}")
-        df = read_csv()
         return templates.TemplateResponse("add_domain.html", {
             "request": request,
             "error": f"Error: {str(e)}",
-            "domain_data": df.to_dict('records')
+            "domain_data": read_csv().to_dict('records')
         })
 
 @app.post("/delete-domain", response_class=HTMLResponse)
 async def delete_domain(request: Request, domain: str = Form(...)):
-    """Deletes a domain from the watchlist."""
+    """Deletes a domain from the watchlist.""" 
     try:
         df = read_csv()
-
-        # Remove the domain from the dataframe
         df = df[df['Sub Domains'] != domain]
-
-        # Write the updated data back to the CSV
         write_csv(df)
-
-        # Return the updated page with the domain removed
         return templates.TemplateResponse("add_domain.html", {
             "request": request,
             "message": f"Domain {domain} successfully removed from the watchlist.",
@@ -165,12 +199,12 @@ async def delete_domain(request: Request, domain: str = Form(...)):
         return templates.TemplateResponse("add_domain.html", {
             "request": request,
             "error": f"Error: {str(e)}",
-            "domain_data": []  
+            "domain_data": read_csv().to_dict('records')
         })
 
 @app.get("/domain-status", response_class=HTMLResponse)
 async def domain_status(request: Request, domain: str = None):
-    """Display domain status and SSL expiry date."""
+    """Display domain status and SSL expiry date.""" 
     if not domain:
         return templates.TemplateResponse("domain_status.html", {"request": request})
 
