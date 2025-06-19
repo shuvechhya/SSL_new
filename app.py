@@ -64,6 +64,7 @@ def get_ssl_expiry(domain_with_port: str) -> str:
     except Exception as e:
         logging.error(f"SSL expiry check failed for {domain}: {e}")
         print("cicd")
+        print("this is the test for cicd")
         return "Error: Could not retrieve SSL expiry"
 
 # Routes
